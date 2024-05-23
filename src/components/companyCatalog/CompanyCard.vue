@@ -1,5 +1,6 @@
 <script setup>
 import { Icon } from '@iconify/vue'
+import ChipList from '@/components/common/ChipList/ChipList.vue'
 
 defineProps({
   company: Object
@@ -7,83 +8,93 @@ defineProps({
 </script>
 
 <template>
-  <div class="candidate-block">
-    <div class="candidate-block__img-wrapper">
-      <img
-        :src="company.picture"
-        :alt="company.title"
-        width="140"
-        height="140"
-        class="candidate-block__img"
-      />
-    </div>
+  <div class="company-block">
+    <img
+      :src="company.picture"
+      :alt="company.title"
+      width="140"
+      height="140"
+      class="company-block__img"
+    />
     <div>
       <RouterLink
         :to="{ name: 'company', params: { company_id: company.id } }"
-        class="candidate-block__title"
+        class="company-block__title"
         >{{ company.title }}</RouterLink
       >
-      <p class="candidate-block__description">{{ company.description_short }}</p>
-      <ul v-if="company.companySpecializations.length" class="candidate-block__specialization-list">
-        <li
-          v-for="specialization of company.companySpecializations"
-          :key="specialization.id"
-          class="candidate-block__specialization-item"
-        >
-          {{ specialization.title }}
-        </li>
-      </ul>
+      <p class="company-block__description">{{ company.description_short }}</p>
+      <ChipList
+        v-if="company.companySpecializations.length"
+        class="company-block__specialization-list"
+        :chips="company.companySpecializations"
+      />
     </div>
-    <Icon icon="fluent:arrow-right-24-filled" class="candidate-block__icon" />
+    <Icon icon="fluent:arrow-right-24-filled" class="company-block__icon" />
   </div>
 </template>
 
 <style lang="scss">
-.candidate-block {
+.company-block {
   pointer-events: none;
   cursor: pointer;
   position: relative;
   z-index: 0;
   background-color: white;
 
-  padding-block: 40px 32px;
-  padding-inline: 30px 15px;
+  padding-block: 24px;
+  padding-inline: 20px;
   border-radius: 8px;
+  transition: all 150ms ease-in-out;
 
   display: grid;
   gap: 20px;
-  grid-template-columns: 140px auto 24px;
+
+  @media (min-width: $tablet-width) {
+    padding-block: 40px 32px;
+    padding-inline: 30px 15px;
+    grid-template-columns: 140px auto 24px;
+  }
 
   &:hover,
   &:focus-within {
     background-color: $hover-color;
 
-    .candidate-block__icon {
-      opacity: 1;
+    .company-block__icon {
+      @media (min-width: $tablet-width) {
+        opacity: 1;
+        left: 0;
+      }
     }
 
-    .candidate-block__title {
+    .company-block__title {
       color: $secondary-color;
     }
   }
 
-  &__img-wrapper {
-    width: 100%;
-  }
-
   &__img {
-    width: auto;
-    height: auto;
+    width: 140px;
+    height: 100px;
     object-fit: contain;
     object-position: top;
+
+    @media (min-width: $tablet-width) {
+      width: 100%;
+      height: auto;
+    }
   }
 
   &__title {
     pointer-events: auto;
-    font-size: 24px;
+    font-size: 20px;
     color: $primary-color;
-    margin-block-end: 16px;
     display: block;
+    transition: all 150ms ease-in-out;
+    margin-block-end: 10px;
+
+    @media (min-width: $tablet-width) {
+      font-size: 24px;
+      margin-block-end: 16px;
+    }
 
     &:focus {
       outline: none;
@@ -107,27 +118,23 @@ defineProps({
 
   &__specialization-list {
     margin-block-start: 16px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px 4px;
-  }
-
-  &__specialization-item {
-    border-radius: 999px;
-    padding-block: 6px;
-    padding-inline: 20px;
-    background-color: $filter-block-color;
-    font-size: 14px;
   }
 
   &__icon {
     position: relative;
     top: 14px;
+    left: -6px;
     opacity: 0;
     width: 24px;
     height: 24px;
     color: $secondary-color;
     align-self: flex-end;
+    transition: all 150ms ease-in-out;
+    display: none;
+
+    @media (min-width: $tablet-width) {
+      display: inline;
+    }
   }
 }
 </style>

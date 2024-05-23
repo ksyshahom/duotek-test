@@ -90,6 +90,7 @@ const isNavMenuOpened = ref(false)
     cursor: pointer;
     display: inline-flex;
     flex-shrink: 0;
+    transition: all 150ms ease-in-out;
 
     &:focus {
       outline: none;

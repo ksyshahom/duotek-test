@@ -3,20 +3,24 @@ import SearchForm from '@/components/companyCatalog/SearchForm.vue'
 import FilterBlock from '@/components/companyCatalog/FilterBlock.vue'
 import CompanyCard from '@/components/companyCatalog/CompanyCard.vue'
 import Pagination from '@/components/companyCatalog/Pagination.vue'
+import Loader from '@/components/common/Loader/Loader.vue'
 import { getCompanies } from '@/dataProviders/companiesDataProvider'
 import { useDefinitionsStore } from '@/stores/definitionsStore'
-import { useDebounceFn } from '@vueuse/core'
 import { ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+
+const route = useRoute()
+const router = useRouter()
 
 const companiesLoading = ref(true)
 const companyList = ref([])
 const showErrorMsg = ref(false)
 const searchErrorMsg = ref('')
 const companiesFilter = {
-  search: '',
-  industry: '',
-  specialization: '',
-  page: ''
+  search: route.query.search ?? '',
+  industry: route.query.industry ?? '',
+  specialization: route.query.specialization ?? '',
+  page: route.query.page ?? ''
 }
 const pagination = ref({ current: 1, length: 1, loading: true })
 
@@ -30,11 +34,9 @@ const getNotEmptyFilters = (filters) => {
   return result
 }
 
-const getFilteredCompanies = async (selectFilters) => {
+const getFilteredCompanies = async () => {
   companiesLoading.value = true
   pagination.value.loading = true
-  companiesFilter.industry = selectFilters.industry.id
-  companiesFilter.specialization = selectFilters.companySpecialization.id
   searchErrorMsg.value = ''
 
   try {
@@ -55,14 +57,10 @@ const getFilteredCompanies = async (selectFilters) => {
     companiesLoading.value = false
     pagination.value.loading = false
   }
-
-  // if (showErrorMsg.value) return
 }
 
-const debouncedGetFilteredCompanies = useDebounceFn(getFilteredCompanies, 1000)
-
 const definitions = useDefinitionsStore()
-const definitionsLoading = ref(true)
+const definitionsLoading = ref(false)
 const filterOptions = ref({
   companySpecializationList: [{ id: '', title: 'Все специализации' }],
   industryList: [{ id: '', title: 'Все отрасли' }]
@@ -73,17 +71,19 @@ const selectedFilter = ref({
 })
 
 const getDefinitions = async () => {
-  definitionsLoading.value = true
+  if (!definitions.industryList.length || !definitions.companySpecializationList) {
+    definitionsLoading.value = true
 
-  try {
-    await definitions.getDefinitions()
-  } catch (e) {
-    showErrorMsg.value = true
-  } finally {
-    definitionsLoading.value = false
+    try {
+      await definitions.getDefinitions()
+    } catch (e) {
+      showErrorMsg.value = true
+    } finally {
+      definitionsLoading.value = false
+    }
+
+    if (showErrorMsg.value) return
   }
-
-  if (showErrorMsg.value) return
 
   filterOptions.value.companySpecializationList = [
     filterOptions.value.companySpecializationList[0],
@@ -94,34 +94,86 @@ const getDefinitions = async () => {
     ...definitions.industryList
   ]
 
-  await getFilteredCompanies(selectedFilter.value)
+  if (companiesFilter.industry !== '') {
+    const selected = filterOptions.value.industryList.findIndex((item) => {
+      return item.id === +companiesFilter.industry
+    })
+    if (selected !== -1) {
+      selectedFilter.value.industry = filterOptions.value.industryList[selected]
+    } else {
+      companiesFilter.industry = ''
+      router.replace({
+        name: route.name,
+        query: companiesFilter
+      })
+    }
+  }
+
+  if (companiesFilter.specialization !== '') {
+    const selected = filterOptions.value.companySpecializationList.findIndex((item) => {
+      return item.id === +companiesFilter.specialization
+    })
+    if (selected !== -1) {
+      selectedFilter.value.specialization = filterOptions.value.companySpecializationList[selected]
+    } else {
+      companiesFilter.specialization = ''
+      router.replace({
+        name: route.name,
+        query: companiesFilter
+      })
+    }
+  }
+
+  await getFilteredCompanies()
 }
 
 getDefinitions()
 
 watch(
   () => selectedFilter,
-  (newValue) => {
-    debouncedGetFilteredCompanies(newValue.value)
+  async (newValue) => {
+    companiesFilter.page = 1
+    companiesFilter.industry = newValue.value.industry.id
+    companiesFilter.specialization = newValue.value.companySpecialization.id
+
+    router.replace({
+      name: route.name,
+      query: companiesFilter
+    })
+
+    await getFilteredCompanies()
   },
   { deep: true }
 )
 
 const setSearchFilter = async (search) => {
+  companiesFilter.page = 1
   companiesFilter.search = search
-  await getFilteredCompanies(selectedFilter.value)
+
+  router.replace({
+    name: route.name,
+    query: companiesFilter
+  })
+
+  await getFilteredCompanies()
 }
 
 const setPageFilter = async (page) => {
   companiesFilter.page = page
-  await getFilteredCompanies(selectedFilter.value)
+
+  router.replace({
+    name: route.name,
+    query: companiesFilter
+  })
+
+  await getFilteredCompanies()
 }
 </script>
 
 <template>
   <section class="container-self company-catalog">
     <h1 class="heading1">Каталог компаний</h1>
-    <div v-if="showErrorMsg">Error!!!</div>
+    <div v-if="showErrorMsg">Произошла ошибка. Попробуйте снова позже.</div>
     <div v-else class="company-catalog__wrapper">
       <FilterBlock
         class="company-catalog__filter"
@@ -134,8 +186,10 @@ const setPageFilter = async (page) => {
           class="company-catalog__search"
           @submit-search="setSearchFilter"
           :error="searchErrorMsg"
+          :initial-value="companiesFilter.search"
         />
-        <div v-if="companiesLoading">loading...</div>
+        <Loader v-if="companiesLoading" class="company-catalog__list-loading" />
+        <div v-else-if="!companyList.length">По заданным фильтрам ничего не найдено.</div>
         <ul class="company-catalog__list" v-else>
           <li v-for="company of companyList" :key="company.id">
             <CompanyCard :company="company" />
@@ -167,6 +221,9 @@ const setPageFilter = async (page) => {
   }
 
   &__search-and-list {
+    display: flex;
+    flex-direction: column;
+
     @media (min-width: $desktop-width) {
       grid-row-start: 1;
       grid-column-start: span 8;
@@ -175,6 +232,10 @@ const setPageFilter = async (page) => {
 
   &__search {
     margin-block-end: 38px;
+  }
+
+  &__list-loading {
+    align-self: center;
   }
 
   &__filter {

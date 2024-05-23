@@ -144,11 +144,15 @@ const socialLinks = [
 
 <style lang="scss">
 .footer {
-  padding-block-start: 80px;
-  padding-block-end: 88px;
+  padding-block: 40px;
 
   background-color: white;
   border-block-start: 1px solid $header-border-color;
+
+  @media (min-width: $tablet-width) {
+    padding-block-start: 80px;
+    padding-block-end: 88px;
+  }
 
   &__nav {
     display: grid;

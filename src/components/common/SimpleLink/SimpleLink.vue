@@ -26,6 +26,7 @@ defineProps({
   background-color: transparent;
   padding: none;
   border: none;
+  transition: all 150ms ease-in-out;
 
   &:focus {
     outline: none;

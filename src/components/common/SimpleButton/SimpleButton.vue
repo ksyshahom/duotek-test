@@ -23,6 +23,7 @@ defineProps({
   border-radius: 4px;
 
   padding: 6px 20px;
+  transition: all 150ms ease-in-out;
 
   &:focus {
     outline: none;

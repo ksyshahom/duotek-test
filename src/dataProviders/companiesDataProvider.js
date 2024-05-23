@@ -1,7 +1,8 @@
 import axios from 'axios'
 
 const urls = {
-  getCompanies: '/companies'
+  getCompanies: '/companies',
+  getCompany: '/companies/info'
 }
 
 const getCompanies = async (filter) => {
@@ -12,4 +13,12 @@ const getCompanies = async (filter) => {
   return data
 }
 
-export { urls as companiesUrls, getCompanies }
+const getCompany = async (company_id) => {
+  const { data } = await axios.get(urls.getCompany, {
+    params: { id: company_id }
+  })
+
+  return data.data
+}
+
+export { urls as companiesUrls, getCompanies, getCompany }

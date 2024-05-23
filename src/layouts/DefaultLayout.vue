@@ -21,7 +21,11 @@ import DefaultFooter from '@/components/layout/DefaultFooter.vue'
 
   &__main {
     flex-grow: 1;
-    padding-block: 75px 44px;
+    padding-block: 44px;
+
+    @media (min-width: $tablet-width) {
+      padding-block: 75px 44px;
+    }
   }
 }
 </style>

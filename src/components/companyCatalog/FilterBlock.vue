@@ -13,7 +13,7 @@ const model = defineModel() // {companySpecialization: Object, industry: Object}
 </script>
 
 <template>
-  <form v-if="!loading" class="company-filter" @submit.prevent>
+  <form class="company-filter" @submit.prevent>
     <p>
       <label>Отрасль</label>
       <SimpleSelect
@@ -32,12 +32,13 @@ const model = defineModel() // {companySpecialization: Object, industry: Object}
         class="company-filter__select"
       />
     </p>
+    <div v-if="loading" class="company-filter__loading"></div>
   </form>
-  <div v-else>loading</div>
 </template>
 
 <style lang="scss">
 .company-filter {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-self: start;
@@ -48,6 +49,13 @@ const model = defineModel() // {companySpecialization: Object, industry: Object}
 
   &__select {
     margin-block-start: 16px;
+  }
+
+  &__loading {
+    position: absolute;
+    inset: 0;
+    background-color: white;
+    opacity: 0.5;
   }
 }
 </style>

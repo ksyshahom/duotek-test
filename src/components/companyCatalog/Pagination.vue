@@ -102,6 +102,8 @@ const pages = computed(() => {
   &__loading {
     position: absolute;
     inset: 0;
+    background-color: white;
+    opacity: 0.5;
   }
 }
 </style>

@@ -1,8 +1,10 @@
 <script setup>
 import { Icon } from '@iconify/vue'
+import { ref, onMounted } from 'vue'
 
-defineProps({
-  error: String
+const props = defineProps({
+  error: String,
+  initialValue: String
 })
 
 const emit = defineEmits(['submitSearch'])
@@ -11,12 +13,23 @@ const emitSearch = (event) => {
   const formData = new FormData(event.target)
   emit('submitSearch', formData.get('search'))
 }
+
+const input = ref()
+
+onMounted(() => {
+  input.value.value = props.initialValue
+})
 </script>
 
 <template>
   <form class="search" @submit.prevent="emitSearch" role="search">
     <div class="search__input-wrapper">
-      <input name="search" placeholder="Поиск продукта или отрасли" class="search__input" />
+      <input
+        ref="input"
+        name="search"
+        placeholder="Поиск продукта или отрасли"
+        class="search__input"
+      />
       <Icon icon="tabler:search" class="search__input-icon" />
     </div>
     <button type="submit" class="search__button">Найти</button>
@@ -49,6 +62,7 @@ const emitSearch = (event) => {
     padding-inline: 48px 16px;
     background-color: white;
     cursor: pointer;
+    transition: all 150ms ease-in-out;
 
     &:hover {
       border-color: $selected-hover-color;
@@ -88,6 +102,7 @@ const emitSearch = (event) => {
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;
     background-color: $primary-color;
+    transition: all 150ms ease-in-out;
 
     &:hover {
       opacity: 0.6;

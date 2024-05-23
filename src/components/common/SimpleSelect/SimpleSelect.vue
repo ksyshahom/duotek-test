@@ -56,6 +56,7 @@ const styles = {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+    transition: all 150ms ease-in-out;
 
     &:hover {
       border-color: $selected-hover-color;
@@ -83,6 +84,7 @@ const styles = {
   &__item {
     padding-block: 4px;
     padding-inline: 16px;
+    transition: all 150ms ease-in-out;
 
     &:hover {
       background-color: $hover-color;
