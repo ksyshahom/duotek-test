@@ -13,11 +13,6 @@ export const useDefinitionsStore = defineStore('definitions', () => {
     industryList.value = response.Industry
   }
 
-  // CompanySpecialization
-  // CompanySpecializationGroup
-  // Industry
-  // IndustryGroup
-
   return {
     companySpecializationList,
     industryList,

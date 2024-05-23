@@ -40,9 +40,12 @@ const isMobile = computed(() => width.value < 640)
               >{{ link.label }}</SimpleLink
             >
           </li>
-          <li v-if="isMobile">
-            <SimpleLink href="#" @click="$emit('closeMenu')">Вход и регистрация</SimpleLink>
-          </li>
+          <template v-if="isMobile">
+            <li><hr class="header-menu__divider" /></li>
+            <li>
+              <SimpleLink href="#" @click="$emit('closeMenu')">Вход и регистрация</SimpleLink>
+            </li>
+          </template>
         </ul>
       </nav>
     </div>
@@ -100,6 +103,10 @@ const isMobile = computed(() => width.value < 640)
     @media (min-width: $desktop-width) {
       gap: 20px 40px;
     }
+  }
+
+  &__divider {
+    border: none;
   }
 }
 </style>

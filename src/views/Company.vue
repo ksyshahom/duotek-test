@@ -1,13 +1,15 @@
 <script setup>
 import Loader from '@/components/common/Loader/Loader.vue'
 import ChipList from '@/components/common/ChipList/ChipList.vue'
+import { Icon } from '@iconify/vue'
 import { getCompany } from '@/dataProviders/companiesDataProvider'
 import { getAgeUnit, getStaffUnit } from '@/utils/getRussianUnit'
-import { useRoute } from 'vue-router'
-import { ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { ref, computed } from 'vue'
 import SimpleLink from '@/components/common/SimpleLink/SimpleLink.vue'
 
 const route = useRoute()
+const router = useRouter()
 
 const companyLoading = ref(true)
 const companyInfo = ref()
@@ -27,10 +29,25 @@ const getCompanyInfo = async () => {
 }
 
 getCompanyInfo()
+
+const getBackRoute = computed(() => {
+  const backPath = router.options.history.state?.back
+  if (
+    !backPath ||
+    backPath.split('?')[0] !==
+      router.options.routes.find((route) => route.name === 'company-list').path
+  )
+    return { name: 'company-list' }
+  return backPath
+})
 </script>
 
 <template>
   <section class="container-self company">
+    <SimpleLink as="RouterLink" :to="getBackRoute" class="company__back-link">
+      <Icon icon="fluent:arrow-left-24-filled" class="company__back-link-icon" />
+      <span class="company__back-link-label">Компании</span>
+    </SimpleLink>
     <div v-if="showErrorMsg">Произошла ошибка. Попробуйте снова позже.</div>
     <Loader v-else-if="companyLoading" />
     <template v-else>
@@ -124,6 +141,27 @@ getCompanyInfo()
 
 <style lang="scss">
 .company {
+  position: relative;
+
+  .company__back-link {
+    color: $primary-color;
+    font-size: 14px;
+    position: absolute;
+    top: -30px;
+    display: flex;
+    align-items: center;
+    gap: 0 10px;
+
+    @media (min-width: $tablet-width) {
+      top: -36px;
+    }
+  }
+
+  &__back-link-icon {
+    width: 24px;
+    height: 24px;
+  }
+
   &__wrapper {
     display: grid;
     grid-template-columns: 1fr;

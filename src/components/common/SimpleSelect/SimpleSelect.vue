@@ -85,6 +85,7 @@ const styles = {
     padding-block: 4px;
     padding-inline: 16px;
     transition: all 150ms ease-in-out;
+    cursor: pointer;
 
     &:hover {
       background-color: $hover-color;

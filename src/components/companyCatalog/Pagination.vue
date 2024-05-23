@@ -10,7 +10,7 @@ const props = defineProps({
 const model = defineModel() // current page
 
 const pages = computed(() => {
-  let pagesArr = [] // (number)[] - отрицательное число обозночает ...
+  let pagesArr = [] // Number[] - отрицательное число обозночает ...
 
   if (props.length <= 7) {
     // если элементов 7 или менее, то ... не добавляем

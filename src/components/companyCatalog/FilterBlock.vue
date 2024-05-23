@@ -14,7 +14,7 @@ const model = defineModel() // {companySpecialization: Object, industry: Object}
 
 <template>
   <form class="company-filter" @submit.prevent>
-    <p>
+    <p class="company-filter__filter">
       <label>Отрасль</label>
       <SimpleSelect
         v-model="model.industry"
@@ -23,7 +23,7 @@ const model = defineModel() // {companySpecialization: Object, industry: Object}
         class="company-filter__select"
       />
     </p>
-    <p>
+    <p class="company-filter__filter">
       <label>Специализация</label>
       <SimpleSelect
         v-model="model.companySpecialization"
@@ -42,10 +42,22 @@ const model = defineModel() // {companySpecialization: Object, industry: Object}
   display: flex;
   flex-direction: column;
   align-self: start;
-  gap: 24px 0;
+  gap: 24px;
   border-radius: 4px;
   background-color: $filter-block-color;
   padding: 18px 20px;
+
+  @media (min-width: $tablet-width) {
+    flex-direction: row;
+  }
+
+  @media (min-width: $desktop-width) {
+    flex-direction: column;
+  }
+
+  &__filter {
+    flex-grow: 1;
+  }
 
   &__select {
     margin-block-start: 16px;

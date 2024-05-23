@@ -61,7 +61,6 @@ onMounted(() => {
     padding-block: 10px;
     padding-inline: 48px 16px;
     background-color: white;
-    cursor: pointer;
     transition: all 150ms ease-in-out;
 
     &:hover {
